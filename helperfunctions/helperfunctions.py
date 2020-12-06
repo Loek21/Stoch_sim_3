@@ -76,27 +76,32 @@ def lin_cool(T_init,t):
 def simulated_annealing(cooling_method, coord_list, initial_time, max_time, initial_temperature):
     config_length = [get_length(coord_list)]
     markov_chain = [coord_list]
+    delta_L_list = []
     T = initial_temperature
     time = initial_time
     seg_list = generate_seg(len(markov_chain[-1]))
-    while time < max_time:
-
-        candidate_coord_list = deepcopy(coord_list)
+    while config_length[-1] > 2850:
+        candidate_coord_list = deepcopy(markov_chain[-1])
 
         # give a kick to the new candidate to change it from the last config
+        # print(get_length(candidate_coord_list))
         kick(candidate_coord_list)
-
+        # print(get_length(candidate_coord_list))
+        np.random.shuffle(seg_list)
         for segments in seg_list:
             reverse_if_better(candidate_coord_list, segments[0], segments[1])
         new_length = get_length(candidate_coord_list)
         delta_L = config_length[-1] - new_length
 
         if delta_L > 0:
+            delta_L_list.append((config_length[-1], new_length))
             config_length.append(new_length)
             markov_chain.append(candidate_coord_list)
 
         else:
+            # print(f"time: {time}, chance: {np.e**(delta_L/T)}")
             if np.random.uniform() < np.e**(delta_L/T):
+
                 config_length.append(new_length)
                 markov_chain.append(candidate_coord_list)
             else:
@@ -105,7 +110,7 @@ def simulated_annealing(cooling_method, coord_list, initial_time, max_time, init
 
         T = cooling_method(initial_temperature, time)
         time += 1
-    return markov_chain, config_length
+    return markov_chain, config_length, delta_L_list
 
 def read_inpt(filename):
     config = []
@@ -125,3 +130,21 @@ def read_inpt(filename):
         config.append(coord)
 
     return config
+
+def T_init(delta_L, T_n, p_0, error):
+    T_est = 10
+    while abs(T_est - p_0) >= error:
+        # print(T_n)
+        E_max = 0
+        E_min = 0
+        for i in range(1,len(delta_L)):
+            E_max += np.exp(-(delta_L[i][0]/T_n))
+            E_min += np.exp(-(delta_L[i][1]/T_n))
+        T_est = E_max/E_min
+        # print(T_est)
+        if abs(T_est - p_0) <= error:
+            return T_n
+        else:
+            # print(np.log(T_est))
+            # print(np.log(p_0))
+            T_n = T_n*(np.log(T_est)/np.log(p_0))**(1/2)
