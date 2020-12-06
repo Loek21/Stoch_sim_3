@@ -74,29 +74,37 @@ def lin_cool(T_init,t):
     return T_new
 
 def simulated_annealing(cooling_method, coord_list, initial_time, max_time, initial_temperature):
-    markov_chain = [get_length(coord_list)]
+    config_length = [get_length(coord_list)]
+    markov_chain = [coord_list]
     T = initial_temperature
     time = initial_time
+    seg_list = generate_seg(len(markov_chain[-1]))
     while time < max_time:
-        new_coord_list = mutate(deepcopy(coord_list))
-        new_length = get_length(new_coord_list)
-        delta_L = markov_chain[-1] - new_length
+
+        candidate_coord_list = deepcopy(coord_list)
+
+        # give a kick to the new candidate to change it from the last config
+        kick(candidate_coord_list)
+
+        for segments in seg_list:
+            reverse_if_better(candidate_coord_list, segments[0], segments[1])
+        new_length = get_length(candidate_coord_list)
+        delta_L = config_length[-1] - new_length
 
         if delta_L > 0:
-            coord_list = new_coord_list
-            markov_chain.append(new_length)
+            config_length.append(new_length)
+            markov_chain.append(candidate_coord_list)
 
         else:
             if np.random.uniform() < np.e**(delta_L/T):
-                coord_list = new_coord_list
-                markov_chain.append(new_length)
+                config_length.append(new_length)
+                markov_chain.append(candidate_coord_list)
             else:
                 markov_chain.append(markov_chain[-1])
 
         T = cooling_method(initial_temperature, time)
         time += 1
-
-    return markov_chain
+    return markov_chain, config_length
 
 def read_inpt(filename):
     config = []
