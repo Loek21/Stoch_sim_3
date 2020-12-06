@@ -16,4 +16,12 @@ if __name__ == "__main__":
     plt.plot(np.linspace(0,5000,5000), markov)
     plt.show()
 
+    for i in range(len(coord_list)-1):
+        x1, y1 = coord_list[i][1], coord_list[i][2]
+        x2, y2 = coord_list[i+1][1], coord_list[i+1][2]
+        plt.plot(x1, y1, 'bo')
+        plt.plot(x2, y2, 'bo')
+        plt.plot([x1, x2], [y1,y2], 'r-')
+    plt.show()
+
 
