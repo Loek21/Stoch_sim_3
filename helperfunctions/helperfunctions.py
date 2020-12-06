@@ -101,6 +101,7 @@ def simulated_annealing(cooling_method, coord_list, initial_time, max_time, init
                 markov_chain.append(candidate_coord_list)
             else:
                 markov_chain.append(markov_chain[-1])
+                config_length.append(config_length[-1])
 
         T = cooling_method(initial_temperature, time)
         time += 1
