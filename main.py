@@ -13,7 +13,7 @@ if __name__ == "__main__":
         max_time=10, initial_temperature=200)
     print(length)
 
-    plt.plot(np.linspace(0,10,10), length)
+    plt.semilogy(np.linspace(0,10,10), length)
     plt.show()
 
     for i in range(len(coord_list)-1):
