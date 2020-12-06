@@ -100,7 +100,7 @@ def simulated_annealing(cooling_method, coord_list, initial_time, max_time, init
 
 def read_inpt(filename):
     config = []
-    f = open(f"Stoch_sim_3/configs/"+f"{filename}.txt", "r")
+    f = open(f"configs/"+f"{filename}.txt", "r")
     skip_lines = f.readlines()[6:]
     for i in range(len(skip_lines)-1):
         line = skip_lines[i]
