@@ -6,12 +6,14 @@ import random
 from copy import deepcopy
 import csv
 
-def get_length(config):
+def get_length(config, entire):
     L = 0
     for i in range(len(config)-1):
         city_a = config[i][1:]
         city_b = config[i+1][1:]
         L += np.sqrt((city_a[0]-city_b[0])**2+(city_a[1]-city_b[1])**2)
+    if entire == True:
+        L += np.sqrt((config[0][1]-config[-1][1])**2+(config[0][2]-config[-1][2])**2)
 
     return L
 
@@ -53,8 +55,8 @@ def reverse_if_better(config, i, j):
     a, b, c, d = config[i-1], config[i], config[j-1], config[j]
 
     # calculate distances of different permutations
-    original = get_length([a,b]) + get_length([c,d])
-    perm = get_length([a,c]) + get_length([b,d])
+    original = get_length([a,b], False) + get_length([c,d], False)
+    perm = get_length([a,c], False) + get_length([b,d], False)
 
     if original > perm:
       config[i:j] = reversed(config[i:j])
@@ -78,7 +80,7 @@ def exp_cool(T_init,t, max_time):
     return T_new
 
 def simulated_annealing(cooling_method, coord_list, initial_time, max_time, initial_temperature):
-    config_length = [get_length(coord_list)]
+    config_length = [get_length(coord_list, True)]
     markov_chain = [coord_list]
     delta_L_list = []
     T = initial_temperature
@@ -94,7 +96,7 @@ def simulated_annealing(cooling_method, coord_list, initial_time, max_time, init
         np.random.shuffle(seg_list)
         for segments in seg_list:
             reverse_if_better(candidate_coord_list, segments[0], segments[1])
-        new_length = get_length(candidate_coord_list)
+        new_length = get_length(candidate_coord_list, True)
         delta_L = config_length[-1] - new_length
 
         if delta_L > 0:
