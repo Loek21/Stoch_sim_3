@@ -70,7 +70,11 @@ def geom_cool(T_init,t):
     return T_new
 
 def lin_cool(T_init,t):
-    T_new = T_init - t*0.66
+    T_new = T_init - t*0.4
+    return T_new
+
+def exp_cool(T_init,t, max_time):
+    T_new = T_init*np.e**(-t*np.log(2)/(0.25*max_time))
     return T_new
 
 def simulated_annealing(cooling_method, coord_list, initial_time, max_time, initial_temperature):
@@ -78,9 +82,9 @@ def simulated_annealing(cooling_method, coord_list, initial_time, max_time, init
     markov_chain = [coord_list]
     delta_L_list = []
     T = initial_temperature
-    time = initial_time
+    # time = initial_time
     seg_list = generate_seg(len(markov_chain[-1]))
-    while config_length[-1] > 2850:
+    for i in range(max_time):
         candidate_coord_list = deepcopy(markov_chain[-1])
 
         # give a kick to the new candidate to change it from the last config
@@ -108,8 +112,8 @@ def simulated_annealing(cooling_method, coord_list, initial_time, max_time, init
                 markov_chain.append(markov_chain[-1])
                 config_length.append(config_length[-1])
 
-        T = cooling_method(initial_temperature, time)
-        time += 1
+        T = cooling_method(initial_temperature, i, max_time)
+        # time += 1
     return markov_chain, config_length, delta_L_list
 
 def read_inpt(filename):
