@@ -9,12 +9,12 @@ import csv
 if __name__ == "__main__":
     coord_list = read_inpt('a280.tsp')
 
-    for j in [5000]:
-        for i in range(16):
+    for j in [10000]:
+        for i in range(5):
             random.shuffle(coord_list)
             markov, length, delta_L_list = simulated_annealing(cooling_method=exp_cool, coord_list=coord_list, initial_time=1, \
                 max_time=j, initial_temperature=200)
-            with open(f"{j}.csv", "a") as f:
+            with open(f"{j}_new2.csv", "a") as f:
                 writer=csv.writer(f, delimiter=';')
                 writer.writerow([np.min(length), length[-1]])
         # initial_T = T_init(delta_L_list, 200, 0.8, 0.01)
