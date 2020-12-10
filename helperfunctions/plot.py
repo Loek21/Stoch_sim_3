@@ -1,18 +1,28 @@
 import matplotlib.pyplot as plt
 import csv
+import numpy as np
 
 def reader(filename):
     conv_list = []
     with open(filename, "r") as f:
-        reader=csv.reader(f)
+        reader=csv.reader(f, delimiter=";")
         for row in reader:
             if len(row) > 0:
-                conv_list.append(int(row[0]))
-    return conv_list
+                conv_list.append(float(row[0]))
+    return np.mean(conv_list), np.std(conv_list)
 
-geom_cool_list = reader("../geom_cool.csv")
-lin_cool_list = reader("../lin_cool_04.csv")
-log_cool_list = reader("../log_cool.csv")
+mean_10, std_10 = reader("../10_new.csv")
+mean_100, std_100 = reader("../100_new.csv")
+mean_1000, std_1000 = reader("../1000_new.csv")
+mean_10000, std_10000 = reader("../10000_new.csv")
+mean_list = np.array([mean_10, mean_100, mean_1000, mean_10000])
+std_list = np.array([std_10, std_100, std_1000, std_10000])
+x_list = [10,100,1000,10000]
 
-plt.boxplot([geom_cool_list, lin_cool_list, log_cool_list])
+fig = plt.figure()
+ax1 = fig.add_subplot(1,1,1)
+ax1.semilogx(x_list, mean_list)
+ax1.fill_between(x_list, mean_list-std_list, mean_list+std_list, alpha=0.5)
+ax1.set_xlabel("Markov Chain length")
+ax1.set_ylabel("Mean travelling distance")
 plt.show()
