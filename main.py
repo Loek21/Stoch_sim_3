@@ -9,8 +9,8 @@ import csv
 if __name__ == "__main__":
     coord_list = read_inpt('a280.tsp')
 
-    for j in [10000]:
-        for i in range(7):
+    for j in [50000]:
+        for i in range(4):
             random.shuffle(coord_list)
             markov, length, delta_L_list = simulated_annealing(cooling_method=exp_cool, coord_list=coord_list, initial_time=1, \
                 max_time=j, initial_temperature=200)
